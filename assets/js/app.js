@@ -7,7 +7,14 @@ const bodyControl = document.getElementById('body')
 const userIdControl= document.getElementById('userId')
 const addbtn= document.getElementById('addbtn')
 const updatebtn= document.getElementById('updatebtn')
+const spinner= document.getElementById('spinner')
 
+
+function tooltip(){
+    $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+}
 
 function snackBar(msg, icon){
     Swal.fire({
@@ -16,10 +23,6 @@ function snackBar(msg, icon){
         timer: 3000
     })
 }
-
-
-
-
 
 const BASE_URL = `https://jsonplaceholder.typicode.com`
 const POST_URL = `${BASE_URL}/posts`
@@ -31,9 +34,9 @@ function createCards(arr){
     arr.forEach(post =>{
 
         result += `
-         <div class="col-md-6 offset-md-3 mb-3" id=${post.id}>
+         <div class="col-md-4 mb-3" id=${post.id}>
             <div class="card">
-                <div class="card-header">
+                <div class="card-header" data-toggle="tooltip" data-placement="top" title="${post.title}">
                     <h3>${post.title}</h3>
 
                 </div>
@@ -52,7 +55,9 @@ function createCards(arr){
         `
     })
     postContainer.innerHTML= result
+    tooltip()
 }
+
 
 function fetchPosts(){
 
@@ -96,10 +101,10 @@ xhr.onload= function(){
         let res= JSON.parse(xhr.response)
 
         let col=document.createElement('div')
-       col.className= `col-md-6 mb-3`
+       col.className= `col-md-4 mb-3`
        col.innerHTML= `
         <div class="card">
-                <div class="card-header">
+                <div class="card-header" data-toggle="tooltip" data-placement="top" title="${obj.title}">
                     <h3>${obj.title}</h3>
 
                 </div>
@@ -116,6 +121,7 @@ xhr.onload= function(){
        
        `
        postContainer.prepend(col)
+       tooltip()
 formId.reset()
 snackBar(`The Post Added successfully`, ` success`)
 spinner.classList.add('d-none')
@@ -133,7 +139,7 @@ spinner.classList.add('d-none')
 }
 
 function onRemove(ele){
-    let REMOVE_ID= ele.closest('.col-md-6').id
+    let REMOVE_ID= ele.closest('.col-md-4').id
     let REMOVE_URL= `${BASE_URL}/posts/${REMOVE_ID}`
 
     Swal.fire({
@@ -155,7 +161,7 @@ spinner.classList.remove('d-none')
     xhr.onload= function(){
         if(xhr.status >= 200 && xhr.status <= 299){
             let res= JSON.parse(xhr.response)
-            ele.closest('.col-md-6').remove()
+            ele.closest('.col-md-4').remove()
 
           
 spinner.classList.add('d-none')
@@ -175,16 +181,16 @@ spinner.classList.add('d-none')
 
 
 function onEdit(ele){
-    let EDIT_ID= ele.closest('.col-md-6').id
+    let EDIT_ID= ele.closest('.col-md-4').id
     localStorage.setItem('EDIT_ID', EDIT_ID)
     let EDIT_URL = `${BASE_URL}/posts/${EDIT_ID}`
 
 
-spinner.classList.remove('d-none')
+//spinner.classList.remove('d-none')
 
     let xhr= new XMLHttpRequest()
     xhr.open('GET', EDIT_URL)
-    xhr.send()
+    xhr.send(null)
     xhr.onload= function(){
         if(xhr.status >= 200 && xhr.status <= 299){
             let EDIT_OBJ= JSON.parse(xhr.response)
@@ -197,7 +203,12 @@ spinner.classList.remove('d-none')
             addbtn.classList.add('d-none')
             updatebtn.classList.remove('d-none')
 
+            formId.scrollIntoView({
+                behavior:"smooth",
+                block: "start"
+            })
 
+       spinner.classList.add('spinner')
 
 
         }
@@ -220,7 +231,7 @@ function onUpdt(){
 
 
     }
-spinner.classList.remove('d-none')
+
 
 
     let xhr= new XMLHttpRequest()
@@ -230,7 +241,7 @@ spinner.classList.remove('d-none')
         if(xhr.status >= 200 && xhr.status <= 299){
             let res= JSON.parse(xhr.response)
 
-            let col= document.getElementById('UPDATE_ID')
+            let col= document.getElementById(UPDATE_ID)
             let h3= col.querySelector('.card-header h3')
             let p =col.querySelector('.card-body p')
 
@@ -242,15 +253,28 @@ spinner.classList.remove('d-none')
             updatebtn.classList.add('d-none')
             addbtn.classList.remove('d-none')
 
+            col.scrollIntoView({
+                behavior: "smooth",
+                block:"center"
+            })
+
+            col.classList.add('highlight-card')
+
+            setTimeout(()=>{
+                col.classList.remove('highlight-card')
+            }, 4000)
+
+
+
+
 
             snackBar(`The post with id ${UPDATE_ID} updated successfully`, `success`)
 
-spinner.classList.add('d-none')
 
 
         }else{
             snackBar(`something went while updating post`, `error`)
-spinner.classList.add('d-none')
+
 
 
         }

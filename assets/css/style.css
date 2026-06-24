@@ -18,3 +18,9 @@ text-overflow: ellipsis;
     position:fixed;
     background-color: rgba(255, 255, 255, .7);
 }
+
+.highlight-card{
+    border: 3px solid green !important;
+    box-shadow: 0 0 15px rgba(0,128,0,0.5);
+    transition: all .5s ease;
+}
